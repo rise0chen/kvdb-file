@@ -6,13 +6,13 @@ license-file = "LICENSE"
 name = "kvdb-file"
 readme = "./README.md"
 repository = "https://github.com/rise0chen/kvdb-file"
-version = "0.10.0"
+version = "0.11.0"
 
 [dependencies]
 hex = "0.4"
-kvdb = {version = "0.10"}
-kvdb-memorydb = {version = "0.10"}
-parity-util-mem = {version = "0.10", default-features = false, features = ["std"]}
+kvdb = {version = "0.11"}
+kvdb-memorydb = {version = "0.11"}
+parity-util-mem = {version = "0.11", default-features = false, features = ["std"]}
 
 [dev-dependencies]
-kvdb-shared-tests = {version = "0.8"}
+kvdb-shared-tests = {version = "0.9"}
