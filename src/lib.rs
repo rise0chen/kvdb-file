@@ -1,4 +1,4 @@
-use kvdb::{DBOp, DBTransaction, DBValue, KeyValueDB};
+use kvdb::{DBKeyValue, DBOp, DBTransaction, DBValue, KeyValueDB};
 use kvdb_memorydb::InMemory;
 use parity_util_mem::MallocSizeOf;
 use std::fs;
@@ -63,7 +63,7 @@ impl KeyValueDB for InFile {
         self.in_memory.get(col, key)
     }
 
-    fn get_by_prefix(&self, col: u32, prefix: &[u8]) -> Option<Box<[u8]>> {
+    fn get_by_prefix(&self, col: u32, prefix: &[u8]) -> io::Result<Option<Vec<u8>>> {
         self.in_memory.get_by_prefix(col, prefix)
     }
 
@@ -108,7 +108,7 @@ impl KeyValueDB for InFile {
     }
 
     // NOTE: clones the whole db
-    fn iter<'a>(&'a self, col: u32) -> Box<dyn Iterator<Item = (Box<[u8]>, Box<[u8]>)> + 'a> {
+    fn iter<'a>(&'a self, col: u32) -> Box<dyn Iterator<Item = io::Result<DBKeyValue>> + 'a> {
         self.in_memory.iter(col)
     }
 
@@ -117,13 +117,8 @@ impl KeyValueDB for InFile {
         &'a self,
         col: u32,
         prefix: &'a [u8],
-    ) -> Box<dyn Iterator<Item = (Box<[u8]>, Box<[u8]>)> + 'a> {
+    ) -> Box<dyn Iterator<Item = io::Result<DBKeyValue>> + 'a> {
         self.in_memory.iter_with_prefix(col, prefix)
-    }
-
-    // NOTE: not supported
-    fn restore(&self, _new_db: &str) -> std::io::Result<()> {
-        Err(io::Error::new(io::ErrorKind::Other, "Not supported yet"))
     }
 }
 
@@ -161,10 +156,7 @@ mod tests {
 
     #[test]
     fn delete_prefix() -> io::Result<()> {
-        let db = InFile::open(
-            format!("{:?}", timestramp()),
-            st::DELETE_PREFIX_NUM_COLUMNS,
-        )?;
+        let db = InFile::open(format!("{:?}", timestramp()), st::DELETE_PREFIX_NUM_COLUMNS)?;
         st::test_delete_prefix(&db)?;
         fs::remove_dir_all(&db.path)
     }
