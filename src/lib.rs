@@ -1,13 +1,12 @@
 use kvdb::{DBKeyValue, DBOp, DBTransaction, DBValue, KeyValueDB};
 use kvdb_memorydb::InMemory;
-use parity_util_mem::MallocSizeOf;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
 /// A key-value database fulfilling the `KeyValueDB` trait, living in file.
 /// This is generally intended for tests and is not particularly optimized.
-#[derive(Default, MallocSizeOf)]
+#[derive(Default)]
 pub struct InFile {
     path: String,
     in_memory: InMemory,
